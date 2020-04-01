@@ -81,7 +81,8 @@ public class XmlParser implements ParseService {
                 for (CSVRecord record : csvRecords) {
                     String vendor = record.get(POSITIONS.get(0));
                     String number = record.get(POSITIONS.get(1));
-                    String description = record.get(POSITIONS.get(2));
+                    String description = record.get(POSITIONS.get(2)).length() > 512 ?
+                            record.get(POSITIONS.get(2)).substring(0, 512) : record.get(POSITIONS.get(2));
 
                     String searchVendor = vendor.replaceAll("[^A-Za-zА-Яа-я0-9]", "").toUpperCase();
                     String searchNumber = number.replaceAll("[^A-Za-zА-Яа-я0-9]", "").toUpperCase();
@@ -112,5 +113,4 @@ public class XmlParser implements ParseService {
         }
         return e;
     }
-
 }
