@@ -4,10 +4,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import javax.mail.*;
-import javax.mail.internet.MimeBodyPart;
 import java.io.IOException;
 import java.util.Properties;
+
+import javax.mail.*;
+import javax.mail.internet.MimeBodyPart;
 
 @Service
 public class ImapCsvDownloader implements DownloaderService {
