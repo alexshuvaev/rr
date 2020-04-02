@@ -32,4 +32,7 @@ public class PriceItemServiceImpl implements PriceItemService {
         return priceItemRepository.count();
     }
 
+    public void deleteAll(){
+        priceItemRepository.deleteAll();
+    }
 }

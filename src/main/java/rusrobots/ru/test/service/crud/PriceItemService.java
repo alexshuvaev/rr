@@ -21,4 +21,9 @@ public interface PriceItemService {
      * @return Количество строк в БД.
      */
     long count();
+
+    /**
+     * Очистить таблицу с прайс-листом.
+     */
+    void deleteAll();
 }

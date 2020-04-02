@@ -6,6 +6,7 @@ import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.ListItem;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.html.UnorderedList;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
@@ -15,8 +16,6 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.spring.annotation.SpringComponent;
 import com.vaadin.flow.spring.annotation.UIScope;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.klaudeta.PaginatedGrid;
 import rusrobots.ru.test.MailConfig;
@@ -27,6 +26,7 @@ import rusrobots.ru.test.service.crud.SupplierService;
 import rusrobots.ru.test.service.downloader.DownloaderService;
 import rusrobots.ru.test.service.parser.ParseService;
 import rusrobots.ru.test.ui.MainLayout;
+import rusrobots.ru.test.util.exception.BadConfigException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -45,6 +45,7 @@ public class SupplierView extends VerticalLayout implements HasUrlParameter<Inte
     private Integer supplierId = -1;
     private Supplier supplier;
     private Button start = new Button("Начать парсинг");
+    private Button delete = new Button("Удалить данные", VaadinIcon.TRASH.create());
 
     private PriceItemService priceItemService;
     private SupplierService supplierService;
@@ -68,12 +69,14 @@ public class SupplierView extends VerticalLayout implements HasUrlParameter<Inte
             supplier = supplierService.findById(supplierId);
         }
         Paragraph p = new Paragraph("");
-        if (priceItemService.count() > 0){
+        delete.setVisible(false);
+        if (priceItemService.count() > 0) {
             start.setEnabled(false);
-            p = new Paragraph("Для повторного парсинга, перезапустите приложение.");
+            delete.setVisible(true);
+            p = new Paragraph("Для повторного парсинга, удалите данные из таблицы.");
         }
         removeAll();
-        add(createForm(), startParsing(), p, fillSupplierGrid());
+        add(createForm(), startParsing(), deleteData(), p, fillSupplierGrid());
     }
 
     private VerticalLayout createForm() {
@@ -130,7 +133,7 @@ public class SupplierView extends VerticalLayout implements HasUrlParameter<Inte
         showNotification("Новая конфигурация успешно сохранена");
     }
 
-    VerticalLayout startParsing() {
+    private VerticalLayout startParsing() {
         String imapConnect = mailConfig.getProp().getProperty(MAIL_IMAP);
         String email = mailConfig.getProp().getProperty(MAIL_USERNAME);
         String password = mailConfig.getProp().getProperty(MAIL_PASSWORD);
@@ -141,11 +144,28 @@ public class SupplierView extends VerticalLayout implements HasUrlParameter<Inte
         start.addClickListener(e -> {
             String fileName = downloaderService.downloadCsvFile(imapConnect, email, password);
 
-            parseService.startParsing(supplierId, fileName);
-            showNotification("Прайс-лист успешно скачен и загружен в БД");
-            start.setEnabled(false);
+            try {
+                parseService.startParsing(supplierId, fileName);
+                showNotification("Прайс-лист успешно скачен и загружен в БД");
+                start.setEnabled(false);
+                delete.setEnabled(true);
+            } catch (BadConfigException ex){
+                showNotification("Не правильная конфигурация парсинга.");
+            }
         });
         return new VerticalLayout(start);
+    }
+
+    private VerticalLayout deleteData() {
+        delete.setWidth("250px");
+        delete.getElement().getThemeList().add("primary");
+        delete.addClickListener(e -> {
+            priceItemService.deleteAll();
+            showNotification("Данные успешно удалены");
+            start.setEnabled(true);
+            delete.setEnabled(false);
+        });
+        return new VerticalLayout(delete);
     }
 
     private Grid<PriceItem> fillSupplierGrid() {
@@ -157,9 +177,8 @@ public class SupplierView extends VerticalLayout implements HasUrlParameter<Inte
         priceItemGrid.setPageSize(500);
         priceItemGrid.setPaginatorSize(20);
 
-        priceItemGrid.addColumn(PriceItem::getId).setHeader("Id").setResizable(true)
-        .setFooter("Всего: " + data.size() + " строк");
-        priceItemGrid.addColumn(PriceItem::getVendor).setHeader("Бренд").setResizable(true);
+        priceItemGrid.addColumn(PriceItem::getVendor).setHeader("Бренд").setResizable(true)
+                .setFooter("Всего: " + data.size() + " строк");
         priceItemGrid.addColumn(PriceItem::getNumber).setHeader("Каталожный номер").setResizable(true);
         priceItemGrid.addColumn(PriceItem::getSearchVendor).setHeader("Бренд (поиск)").setResizable(true);
         priceItemGrid.addColumn(PriceItem::getSearchNumber).setHeader("Каталожный номер (поиск)").setResizable(true);

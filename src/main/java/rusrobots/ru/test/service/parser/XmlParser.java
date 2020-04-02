@@ -12,6 +12,7 @@ import rusrobots.ru.test.entity.PriceItem;
 import rusrobots.ru.test.entity.Supplier;
 import rusrobots.ru.test.service.crud.PriceItemService;
 import rusrobots.ru.test.service.crud.SupplierService;
+import rusrobots.ru.test.util.exception.BadConfigException;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -41,6 +42,7 @@ public class XmlParser implements ParseService {
 
     @Transactional
     public void startParsing(Integer id, String filename) {
+        log.info("Start parsing CSV file");
         try {
             Supplier supplier = supplierService.findById(id);
             HEADER_CONFIG.set(0, supplier.getVendorLabel());
@@ -48,7 +50,6 @@ public class XmlParser implements ParseService {
             HEADER_CONFIG.set(2, supplier.getDescriptionLabel());
             HEADER_CONFIG.set(3, supplier.getPriceLabel());
             HEADER_CONFIG.set(4, supplier.getCountLabel());
-
             Stream<String> stream = Files.lines(Paths.get(filename));
 
             List<String> list = stream
@@ -60,6 +61,9 @@ public class XmlParser implements ParseService {
             HEADER_CONFIG.forEach(e -> {
                 if (headerFile.contains(e)) {
                     POSITIONS.add(headerFile.indexOf(e));
+                } else {
+                    throw new BadConfigException("Не правильная конфигурация парсинга. " +
+                            "Проверьте совпадение названий столбцов - в CSV файле и в конфигурации.");
                 }
             });
 

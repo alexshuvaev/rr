@@ -15,6 +15,7 @@ public class ImapCsvDownloader implements DownloaderService {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     public String downloadCsvFile(String imapConnect, String userName, String password) {
+        log.info("Start download CSV file");
         String filename = "";
         try {
             Properties properties = new Properties();
