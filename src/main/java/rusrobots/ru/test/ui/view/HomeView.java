@@ -65,17 +65,9 @@ public class HomeView extends VerticalLayout {
 
     private HorizontalLayout mailConfigure() {
         TextField imapConnect, username, password;
-
-        if (mailConfig.isConfigure()){
-            imapConnect = textFieldSetup(mailConfig.getProp().getProperty(MAIL_IMAP));
-            username = textFieldSetup(mailConfig.getProp().getProperty(MAIL_USERNAME));
-            password = textFieldSetup(mailConfig.getProp().getProperty(MAIL_PASSWORD));
-        } else {
-            String notConfig = "Не сконфигурировано";
-            imapConnect = textFieldSetup(notConfig);
-            username = textFieldSetup(notConfig);
-            password = textFieldSetup(notConfig);
-        }
+        imapConnect = textFieldSetup(mailConfig.getProp().getProperty(MAIL_IMAP));
+        username = textFieldSetup(mailConfig.getProp().getProperty(MAIL_USERNAME));
+        password = textFieldSetup(mailConfig.getProp().getProperty(MAIL_PASSWORD));
         List<TextField> formFields = new ArrayList<>(Arrays.asList(imapConnect, username, password));
 
         Button save = new Button("Сохранить");
@@ -94,18 +86,15 @@ public class HomeView extends VerticalLayout {
                     return e.getValue();
                 }).collect(Collectors.toList());
 
-        if (updated.contains("Не сконфигурировано")){
-            showNotification("Пожалуйста заполните не сконфигурированные поля");
-        } else {
-            mailConfig.getProp().setProperty(MAIL_IMAP, updated.get(0).trim());
-            mailConfig.getProp().setProperty(MAIL_USERNAME, updated.get(1).trim());
-            mailConfig.getProp().setProperty(MAIL_PASSWORD, updated.get(2).trim());
-            try {
-                mailConfig.getProp().store(new FileOutputStream(mailConfig.getFile()), null);
-                showNotification("Новая конфигурация успешно сохранена");
-            } catch (IOException e) {
-                log.error("Не удалось записать новую конфигурацию в {} , {}", mailConfig.getFile(), e.getMessage());
-            }
+        mailConfig.getProp().setProperty(MAIL_IMAP, updated.get(0).trim());
+        mailConfig.getProp().setProperty(MAIL_USERNAME, updated.get(1).trim());
+        mailConfig.getProp().setProperty(MAIL_PASSWORD, updated.get(2).trim());
+
+        try {
+            mailConfig.getProp().store(new FileOutputStream(mailConfig.getFile()), null);
+            showNotification("Новая конфигурация успешно сохранена");
+        } catch (IOException e) {
+            log.error("Не удалось записать новую конфигурацию в {} , {}", mailConfig.getFile(), e.getMessage());
         }
     }
 
