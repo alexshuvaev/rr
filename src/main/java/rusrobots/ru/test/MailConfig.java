@@ -4,10 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.Properties;
 
 @Component
@@ -23,22 +20,27 @@ public class MailConfig {
     private boolean configure;
 
     public MailConfig() {
-        if (FILE.exists()) {
-            prop = new Properties();
-            try {
+        prop = new Properties();
+        try {
+            if (FILE.exists()) {
                 InputStream in = new FileInputStream(FILE);
                 prop.load(in);
                 in.close();
-
                 this.configure = prop.containsKey(MAIL_IMAP) && prop.containsKey(MAIL_USERNAME) && prop.containsKey(MAIL_PASSWORD);
 
-            } catch (IOException e) {
-                log.error("Не удалось загрузить файл mailconfig.properties {}", e.getMessage());
+            } else if (!FILE.exists() || !configure){
+                prop.setProperty(MAIL_IMAP,"imap.mail.ru");
+                prop.setProperty(MAIL_USERNAME,"rusrobtest@mail.ru");
+                prop.setProperty(MAIL_PASSWORD,"123qwerty654");
+                prop.store(new FileOutputStream(FILE), null);
+                this.configure = true;
             }
-        } else {
-            this.configure = false;
+        } catch (IOException e) {
+            log.error("Не удалось загрузить/сохранить файл mailconfig.properties {}", e.getMessage());
         }
     }
+
+
 
     public Properties getProp() {
         return prop;

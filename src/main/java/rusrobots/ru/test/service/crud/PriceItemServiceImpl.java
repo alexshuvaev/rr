@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import rusrobots.ru.test.entity.PriceItem;
 import rusrobots.ru.test.repository.PriceItemRepository;
 
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -18,7 +19,8 @@ public class PriceItemServiceImpl implements PriceItemService {
 
     @Override
     public List<PriceItem> findAll() {
-        return priceItemRepository.findAll();
+        List<PriceItem> priceItems = priceItemRepository.findAll();
+        return priceItems.isEmpty() ? Collections.emptyList() : priceItems;
     }
 
     @Override
@@ -30,4 +32,7 @@ public class PriceItemServiceImpl implements PriceItemService {
         return priceItemRepository.count();
     }
 
+    public void deleteAll(){
+        priceItemRepository.deleteAll();
+    }
 }
