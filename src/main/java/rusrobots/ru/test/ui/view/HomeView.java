@@ -140,7 +140,7 @@ public class HomeView extends VerticalLayout {
         suppliersListGrid.setSizeFull();
         suppliersListGrid.setHeightByRows(true);
         suppliersListGrid.setMaxHeight("300px");
-        suppliersListGrid.addColumn(Supplier::getId).setHeader("Id").setResizable(true);
+        suppliersListGrid.addColumn(Supplier::getId).setHeader("Id").setAutoWidth(true);
         suppliersListGrid.addColumn(Supplier::getCompanyName).setHeader("Поставщик").setResizable(true);
         suppliersListGrid.addColumn(Supplier::getVendorLabel).setHeader("Бренд").setResizable(true);
         suppliersListGrid.addColumn(Supplier::getNumberLabel).setHeader("Каталожный номер").setResizable(true);
