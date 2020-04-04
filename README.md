@@ -1,6 +1,6 @@
-# Russian Robotics Test Task
+# Email Attachment downloader & CSV parser
 
-Application which downloading CSV-file from email, parsing it and persist to DB
+Application which downloading CSV-file from email, parsing it and persist to DB.
 
 ## Requirements
 
@@ -51,6 +51,6 @@ The app will start running at <http://localhost:8080>.
 
 ## Screanshots
 
-![RR](http://emiimi.ru/rr.jpg)
+![RR](http://rulikoleso.ru/rr.jpg)
 
 
