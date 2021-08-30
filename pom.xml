@@ -21,7 +21,7 @@
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<vaadin.version>14.1.20</vaadin.version>
+		<vaadin.version>14.6.8</vaadin.version>
 		<logback.version>1.2.3</logback.version>
 		<slf4j.version>1.7.30</slf4j.version>
 		<hibernate.version>5.4.12.Final</hibernate.version>
