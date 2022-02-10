@@ -24,7 +24,7 @@
 		<vaadin.version>14.1.20</vaadin.version>
 		<logback.version>1.2.3</logback.version>
 		<slf4j.version>1.7.30</slf4j.version>
-		<hibernate.version>5.4.12.Final</hibernate.version>
+		<hibernate.version>5.4.24.Final</hibernate.version>
 	</properties>
 
 	<repositories>
